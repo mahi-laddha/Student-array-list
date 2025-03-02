@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Student {
     private String prn;
@@ -29,6 +30,7 @@ public class Student {
 
     // Display Student Information
     public void display() {
-        System.out.println("PRN: " + prn + ", Name: " + name + ", DOB: " + dob + ", Marks: " + marks);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        System.out.println("PRN: " + prn + ", Name: " + name + ", DOB: " + sdf.format(dob) + ", Marks: " + marks);
     }
 }
