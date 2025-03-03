@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class StudentManagement {
     private ArrayList<Student> students;
@@ -16,16 +17,27 @@ public class StudentManagement {
     public void addStudent() {
         System.out.print("Enter PRN: ");
         String prn = scanner.next();
+
         System.out.print("Enter Name: ");
-        String name = scanner.next();
+        scanner.nextLine(); // Consume leftover newline
+        String name = scanner.nextLine();
+
         System.out.print("Enter DOB (dd-MM-yyyy): ");
         String dobStr = scanner.next();
+
+        scanner.nextLine(); // Consume newline before reading marks
+
         System.out.print("Enter Marks: ");
+        while (!scanner.hasNextDouble()) {
+            System.out.println("Invalid input! Please enter numeric marks.");
+            scanner.next(); // Clear invalid input
+        }
         double marks = scanner.nextDouble();
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            students.add(new Student(prn, name, sdf.parse(dobStr), marks));
+            Date dob = sdf.parse(dobStr);
+            students.add(new Student(prn, name, dob, marks));
             System.out.println("Student added successfully!");
         } catch (ParseException e) {
             System.out.println("Invalid date format. Use dd-MM-yyyy.");
@@ -59,11 +71,17 @@ public class StudentManagement {
     // Search by Name
     public void searchByName() {
         System.out.print("Enter Name to search: ");
-        String name = scanner.next();
+        scanner.nextLine(); // Consume leftover newline
+        String name = scanner.nextLine();
+        boolean found = false;
         for (Student s : students) {
             if (s.getName().equalsIgnoreCase(name)) {
                 s.display();
+                found = true;
             }
+        }
+        if (!found) {
+            System.out.println("No student found with name: " + name);
         }
     }
 
@@ -74,9 +92,16 @@ public class StudentManagement {
         for (Student s : students) {
             if (s.getPrn().equals(prn)) {
                 System.out.print("Enter new Name: ");
-                s.setName(scanner.next());
+                scanner.nextLine(); // Consume newline
+                s.setName(scanner.nextLine());
+
                 System.out.print("Enter new Marks: ");
+                while (!scanner.hasNextDouble()) {
+                    System.out.println("Invalid input! Please enter numeric marks.");
+                    scanner.next();
+                }
                 s.setMarks(scanner.nextDouble());
+
                 System.out.println("Student updated successfully!");
                 return;
             }
@@ -88,7 +113,11 @@ public class StudentManagement {
     public void deleteStudent() {
         System.out.print("Enter PRN to delete: ");
         String prn = scanner.next();
-        students.removeIf(s -> s.getPrn().equals(prn));
-        System.out.println("Student deleted (if PRN existed).");
+        boolean removed = students.removeIf(s -> s.getPrn().equals(prn));
+        if (removed) {
+            System.out.println("Student deleted successfully!");
+        } else {
+            System.out.println("Student not found.");
+        }
     }
 }
